@@ -1,0 +1,9 @@
+<mat-drawer-container class="container">
+  <mat-drawer class="side-bar" mode="side" opened>
+    <app-sideBar (changesApplied)="selectShape($event)"></app-sideBar>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div #container style="overflow: hidden;"></div>
+    <div #labelDiv class="label">Label</div>
+  </mat-drawer-content>
+</mat-drawer-container>

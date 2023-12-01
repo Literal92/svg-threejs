@@ -1,0 +1,60 @@
+<h1 mat-dialog-title>Label Config</h1>
+<div mat-dialog-content>
+  <mat-tab-group>
+    <mat-tab label="Text">
+      <form [formGroup]="textForm">
+        <mat-form-field>
+          <mat-label>Label Text</mat-label>
+          <input matInput type="text" formControlName="labelText">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Font Size</mat-label>
+          <input matInput type="number" formControlName="labelSize">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Color</mat-label>
+          <input matInput type="text" formControlName="labelColor">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>X coordinate</mat-label>
+          <input matInput type="text" formControlName="labelx">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Y coordinate</mat-label>
+          <input matInput type="text" formControlName="labelY">
+        </mat-form-field>
+      </form>
+    </mat-tab>
+    <mat-tab label="Shape">
+      <form [formGroup]="shapeForm">
+        <mat-form-field>
+          <mat-label>Shape Name</mat-label>
+          <input matInput type="text" readonly formControlName="name" >
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Shape Color</mat-label>
+          <input matInput type="text" formControlName="fill">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Shape Width</mat-label>
+          <input matInput type="number" formControlName="width">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-label>Shape Height</mat-label>
+          <input matInput type="number" formControlName="height">
+        </mat-form-field>
+        <br>
+      </form>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onNoClick()" cdkFocusInitial>Save</button>
+</div>
