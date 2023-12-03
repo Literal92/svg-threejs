@@ -3,8 +3,7 @@
     <app-sideBar (changesApplied)="selectShape($event)"></app-sideBar>
   </mat-drawer>
   <mat-drawer-content>
-    <div (mousedown)="onMouseDown()" (mouseup)="onMouseUp()" (mousedown)="onMouseDown()"
-      (window:mousemove)="onMouseMove($event)">
+    <div (mousedown)="onMouseDown()" (mouseup)="onMouseUp()" (mousemove)="onMouseMove($event)">
       <canvas #container style="position: relative; overflow: hidden; z-index: -1;"></canvas>
       <div cdkDrag #labelDiv class="label">{{labelText}}</div>
     </div>
