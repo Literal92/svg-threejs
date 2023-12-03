@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, NgZone, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
 import { LabelData, LabelConfig, ShapeConfig } from './model/labelData';
 import { MatDialog } from '@angular/material/dialog';
 import { LabelConfigComponent } from './components/labelConfig/labelConfig.component';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,10 +20,19 @@ export class AppComponent implements AfterViewInit {
   private camera: THREE.PerspectiveCamera;
   private labelData: LabelData;
   private LabelConfig: LabelConfig;
+  private previousLabelConfig: LabelConfig;
   private ShapeConfig: ShapeConfig;
   private shape: string;
+  private labelPosition: THREE.Vector3;
+  private isDragging = false;
 
-  constructor(private ngZone: NgZone, public dialog: MatDialog) { }
+  labelText = 'Label';
+
+  constructor(private ngZone: NgZone,
+    public dialog: MatDialog,
+  ) {
+    this.labelPosition = new THREE.Vector3();
+  }
 
   ngAfterViewInit(): void {
     this.init();
@@ -30,33 +40,28 @@ export class AppComponent implements AfterViewInit {
   }
 
 
-  init() {
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+  private init() {
+    this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, canvas: this.container.nativeElement });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this.container.nativeElement.appendChild(this.renderer.domElement);
-
-    this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+    this.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
     this.camera.position.set(0, 0, 200);
 
     this.loadSVG('../assets/Image/timer.svg');
   }
 
-  animate() {
+  private animate() {
     this.ngZone.runOutsideAngular(() => {
       const animate = () => {
-        requestAnimationFrame(animate);
-
         this.renderer.render(this.scene, this.camera);
-
+        requestAnimationFrame(animate);
       };
-
       animate();
     });
   }
 
-  loadSVG(url: string) {
+  private loadSVG(url: string) {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xb0b0b0);
 
@@ -99,28 +104,12 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-  updateLabelPosition(position: THREE.Vector3) {
-
+  private updateLabelPosition() {
+    const labelDiv = this.labelDivRef.nativeElement;
+    labelDiv.style.transform = `translate(-50%, -50%) translate(${this.labelPosition.x}px, ${this.labelPosition.y}px)`;
   }
 
-  selectShape(shape: string) {
-    const dialogRef = this.dialog.open(LabelConfigComponent, {
-      data: shape,
-      width: '50%',
-      height: '70%'
-    });
-
-    dialogRef.afterClosed().subscribe((result: { text: LabelConfig, shape: ShapeConfig }) => {
-      if (result) {
-        this.shape = shape
-        this.LabelConfig = result.text;
-        this.ShapeConfig = result.shape;
-        this.createLabel();
-      }
-    });
-  }
-
-  createLabel() {
+  private createLabel() {
 
     // Update label position based on the 3D object's position
     const labelPosition = new THREE.Vector3();
@@ -133,8 +122,8 @@ export class AppComponent implements AfterViewInit {
     const screenPosition = labelPosition.clone().project(this.camera);
 
     // Convert normalized screen coordinates to pixel values
-    const x = (screenPosition.x + this.LabelConfig.labelx) * 0.25 * container.width;
-    const y = (-screenPosition.y + this.LabelConfig.labelY) * 0.25 * container.height;
+    this.labelPosition.set(((screenPosition.x + this.LabelConfig.labelx) * 0.25 * container.width),
+      ((-screenPosition.y + this.LabelConfig.labelY) * 0.25 * container.height), 0);
 
     labelDiv.style.display = 'flex'
     labelDiv.style.width = this.ShapeConfig.width + 'px';
@@ -146,12 +135,12 @@ export class AppComponent implements AfterViewInit {
     labelDiv.style.backgroundColor = this.shape === 'Text' ? 'transparent' : this.ShapeConfig.fill;
 
     // Update label position
-    labelDiv.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    this.updateLabelPosition();
 
     this.sendDatatoApi()
   }
 
-  sendDatatoApi() {
+  private sendDatatoApi() {
 
     this.labelData = {
       data: {
@@ -193,5 +182,62 @@ export class AppComponent implements AfterViewInit {
     }
 
     console.log('labelData: ', this.labelData);
+  }
+
+  // Draggable Label Component
+  onMouseMove(event) {
+    if (this.isDragging && this.LabelConfig) {
+      const container = this.container.nativeElement.getBoundingClientRect();
+      this.LabelConfig.labelx = ((event.clientX / 0.25) / container.width) - 0.4;
+      this.LabelConfig.labelY = (event.clientY / 0.25) / container.height;
+
+      const labelPosition = new THREE.Vector3();
+      this.scene.getWorldPosition(labelPosition);
+
+
+      // Convert 3D position to 2D screen coordinates
+      const screenPosition = labelPosition.clone().project(this.camera);
+
+      // Convert normalized screen coordinates to pixel values
+      this.labelPosition.set(((screenPosition.x + this.LabelConfig.labelx) * 0.25 * container.width),
+        ((-screenPosition.y + this.LabelConfig.labelY) * 0.25 * container.height), 0);
+
+      this.updateLabelPosition();
+    }
+  }
+
+  onMouseDown() {
+    this.isDragging = true;
+  }
+
+  onMouseUp() {
+    if (this.isDragging && this.LabelConfig) {
+      if (this.LabelConfig.labelx !== this.previousLabelConfig.labelx || this.LabelConfig.labelY !== this.previousLabelConfig.labelY) {
+        this.previousLabelConfig = { ...this.LabelConfig };
+        this.selectShape(this.shape);
+      }
+    }
+    this.isDragging = false;
+  }
+
+  selectShape(shapeName: string) {
+    const dialogRef = this.dialog.open(LabelConfigComponent, {
+      data: { shape: this.ShapeConfig, label: this.LabelConfig, shapeName: shapeName },
+      width: '50%',
+      height: '70%'
+    });
+
+    dialogRef.afterClosed().subscribe((result: { text: LabelConfig, shape: ShapeConfig }) => {
+      if (result) {
+        this.shape = shapeName
+        this.LabelConfig = result.text;
+        this.previousLabelConfig = { ...result.text };
+        this.ShapeConfig = result.shape;
+
+        this.labelText = result.text.labelText;
+
+        this.createLabel();
+      }
+    });
   }
 }

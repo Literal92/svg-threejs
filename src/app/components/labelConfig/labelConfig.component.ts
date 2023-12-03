@@ -26,12 +26,26 @@ export class LabelConfigComponent implements OnInit {
   });
 
   constructor(public dialogRef: MatDialogRef<LabelConfigComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: string,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private builder: FormBuilder
   ) {
-    this.shapeForm.get('name').patchValue(data);
-    this.shapeForm.get('width').patchValue(data === 'Rectangle' ? 200 : 100);
-    this.shapeForm.get('height').patchValue(data === 'Ellipse' ? 200 : 100);
+    if (data.label) {
+      this.textForm.get('labelText').patchValue(data.label.labelText);
+      this.textForm.get('labelSize').patchValue(data.label.labelSize);
+      this.textForm.get('labelColor').patchValue(data.label.labelColor);
+      this.textForm.get('labelx').patchValue(data.label.labelx);
+      this.textForm.get('labelY').patchValue(data.label.labelY);
+    }
+    if (data.shape && data.shape.name === data.shapeName) {
+      this.shapeForm.get('name').patchValue(data.shape.name);
+      this.shapeForm.get('fill').patchValue(data.shape.fill);
+      this.shapeForm.get('width').patchValue(data.shape.width);
+      this.shapeForm.get('height').patchValue(data.shape.height);
+    } else {
+      this.shapeForm.get('name').patchValue(data.shapeName);
+      this.shapeForm.get('width').patchValue(data.shapeName === 'Rectangle' ? 200 : 100);
+      this.shapeForm.get('height').patchValue(data.shapeName === 'Ellipse' ? 200 : 100);
+    }
   }
 
   ngOnInit() {

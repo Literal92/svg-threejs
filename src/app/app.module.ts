@@ -13,6 +13,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button'
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { MatButtonModule } from '@angular/material/button'
     MatDialogModule,
     MatTabsModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]
