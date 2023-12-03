@@ -1,28 +1,76 @@
-# Threejs
+# Three.js Angular Application
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+This project is an Angular application that integrates the Three.js library to create a 3D scene. The application includes a label component that can be configured dynamically. The label shape can be changed between a rectangle, circle, or ellipse. Additionally, you can configure the label text, scale factor, offset, and aspect ratio.
 
-## Development server
+## Getting Started
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Prerequisites
 
-## Code scaffolding
+Make sure you have Node.js and npm installed on your machine.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Installation
 
-## Build
+1. Clone the repository:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+   ```bash
+   git clone https://github.com/your-username/threejs-angular-app.git
+   ```
 
-## Running unit tests
+2. Navigate to the project directory:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+   ```bash
+   cd threejs-angular-app
+   ```
 
-## Running end-to-end tests
+3. Install dependencies:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+   ```bash
+   npm install
+   ```
 
-## Further help
+### Development Server
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
-"# svg-threejs" 
+Run the application in development mode:
+
+```bash
+npm start
+```
+
+Navigate to `http://localhost:4200/` in your web browser to view the application.
+
+### Build
+
+To build the application for production:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+## Configuration
+
+The application allows dynamic configuration of the label through a configuration component. You can change the label text, shape (rectangle, circle, or ellipse), scale factor, offset, and aspect ratio.
+
+1. Open the configuration panel by clicking the "Configure Label" button.
+
+2. Modify the configuration parameters as needed.
+
+3. Click the "Apply Changes" button to see the updated label in the 3D scene.
+
+## Scripts
+
+- `npm start`: Run the development server.
+- `npm run build`: Build the application for production.
+- `npm run watch`: Build the application in watch mode for development.
+- `npm test`: Run unit tests.
+
+## Dependencies
+
+- Angular: Framework for building web applications.
+- Three.js: Library for 3D graphics in the browser.
+- Other libraries for Angular and testing.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
